@@ -1,6 +1,7 @@
 N = int(input())
 
-min_cnt = 0xffff
+min_cnt = 0xFFFF
+
 
 def solve(n, X):
     global min_cnt
@@ -16,6 +17,7 @@ def solve(n, X):
     if X % 2 == 0:
         solve(n + 1, X / 2)
     solve(n + 1, X - 1)
+
 
 solve(0, N)
 print(min_cnt)
