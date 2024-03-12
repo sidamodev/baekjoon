@@ -2,33 +2,37 @@ import sys
 from collections import deque
 
 input = sys.stdin.readline
+d_ij = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 
 
-def bfs(s_i, s_j):
-    global wall_break
+def bfs(s_i, s_j, w_b):
     q = deque([(s_i, s_j)])
-    A[s_i][s_j] = 1
+    visit[s_i][s_j] = 1
     while q:
         i, j = q.popleft()
         for di, dj in d_ij:
             ni, nj = i + di, j + dj
-            if N > ni >= 0 <= nj < M:
-                if wall_break:
-                    if (i, j) == (N - 1, M - 1):
-                        wall_break = 0
-                    else:
-                        bfs(ni, nj)
-                if A[ni][nj] == 0:
-                    A[ni][nj] = A[i][j] + 1
+            if 0 <= ni < N and 0 <= nj < M:
+                if not visit[ni][nj] and A[ni][nj] == 0:
+                    visit[ni][nj] = visit[i][j] + 1
                     q.append((ni, nj))
+                    print(visit)
+
+            # elif w_b and not visit[ni][nj] and A[ni][nj] == 1:
+            #     bfs(ni, nj, 0)
+
+    # tmp = visit[N - 1][M - 1]
+    # if tmp > 0:
+    #     v.append(tmp)
 
 
 N, M = map(int, input().split())
 A = [list(map(int, input().strip())) for _ in range(N)]
-d_ij = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-wall_break = 1
-bfs(0, 0)
-res = A[N - 1][M - 1]
-if not res:
-    res = -1
-print(res)
+v = []
+visit = [[0] * M for _ in range(N)]
+
+bfs(0, 0, 1)
+res = -1
+if v:
+    res = min(v) + 1
+print(v)
