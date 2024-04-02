@@ -1,9 +1,4 @@
 from collections import deque
-import sys
-
-input = sys.stdin.readline
-print = sys.stdout.write
-
 d_ij = ((0, 1), (0, -1), (1, 0), (-1, 0))
 
 
@@ -11,7 +6,7 @@ def dfs(lev, a, arr):
     global min_v
     if lev == 3:
         cnt_v = 0
-        lab = v = [ x[:] for x in arr ]
+        lab = v = [x[:] for x in arr]
         for i in range(N):
             for j in range(M):
                 if lab[i][j] == 1:
