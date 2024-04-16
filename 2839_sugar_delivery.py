@@ -2,14 +2,15 @@ N = int(input())
 memo = [0] * (N * 3)
 
 
-def dp(i):
-    if i <= 3 or i == 5:
-        return 1
-    elif memo[i]:
-        return memo[i]
-    else:
-        memo[i] = min(dp(i - 3) + 1, dp(i - 5) + 1)
-        return memo[i]
+def dp(n):
+    for i in range(3, n + 1):
+        if i % 5 == 0:
+            memo[i] = memo[i - 5] + 1
+        elif i % 3 == 0:
+            memo[i] = memo[i - 3] + 1
+        else:
+            memo[i] = min(memo[i - 3] + 1, memo[i - 5] + 1)
+    return memo[n]
 
 
 if N == 4 or N == 7:
