@@ -15,7 +15,7 @@ def find_day():
                 result = box[i][j]
     return result - 1
 
-`
+
 d_ij = [(0, 1), (1, 0), (0, -1), (-1, 0)]
 start_lst = [(i, j) for i in range(N) for j in range(M) if box[i][j] == 1]
 q = deque(start_lst)
