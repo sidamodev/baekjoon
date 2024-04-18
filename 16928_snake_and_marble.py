@@ -1,4 +1,4 @@
-import queue
+from collections import deque
 
 N, M = map(int, input().split())
 ladder = [list(map(int, input().split())) for _ in range(N)]
@@ -11,12 +11,11 @@ for x, y in ladder:
 for u, v in snake:
     board[u] = v
 
-q = queue.Queue()
-q.put(1)
+queue = deque([1])
 visit = [0] * 101
 visit[1] = 1
-while not q.empty():
-    pos = q.get()
+while queue:
+    pos = queue.popleft()
     if pos == 100: break
     for i in range(1, 7):
         if pos + i > 100: continue
@@ -25,6 +24,6 @@ while not q.empty():
             next_pos = pos + i
         if visit[next_pos]: continue
         visit[next_pos] = visit[pos] + 1
-        q.put(next_pos)
+        queue.append(next_pos)
 
 print(visit[100] - 1)
