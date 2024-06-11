@@ -1,75 +1,51 @@
 from heapq import heappush, heappop
 
-d_ij = [(-1, 0), (0, -1), (0, 1), (1, 0)]
 
-N, M, F = map(int, input().split())
-arr = [list(map(int, input().split())) for _ in range(N)]
-taxi_i, taxi_j = map(int, input().split())
-taxi_i -= 1
-taxi_j -= 1
-start_arr = []
-dest_arr = []
-chk = set()
+def input_list():
+    return map(int, input().split())
+
+
+N, M, F = input_list()
+arr = [list(input_list()) for _ in range(N)]
+taxi = tuple(map(lambda x: x - 1, input_list()))
+dest_dict = {}
 for p_number in range(2, M + 2):
-    start_i, start_j, dest_i, dest_j = map(int, input().split())
-    start_arr.append((start_i - 1, start_j - 1))
-    dest_arr.append((dest_i - 1, dest_j - 1))
+    start_i, start_j, dest_i, dest_j = (map(lambda x: x - 1, input_list()))
+    arr[start_i][start_j] = 2
+    dest_dict[(start_i, start_j)] = (dest_i, dest_j)
 
 
-def to_person():
-    global taxi_i, taxi_j
-    pq = [(0, taxi_i, taxi_j)]
-    visited = [[0] * N for _ in range(N)]
-    visited[taxi_i][taxi_j] = 1
+def get_dist(F, fuel_empty, is_target):
+    global taxi
+    pq = [(0, taxi[0], taxi[1])]
+    visit = [[False] * N for _ in range(N)]
     while pq:
         d, i, j = heappop(pq)
-        if arr[i][j] == 0:  # 승객을 찾으면 승객 번호와 소모된 연료를 반환
-            for p in range(M):
-                if p not in chk and start_arr[p] == (i, j):
-                    taxi_i, taxi_j = i, j
-                    chk.add(p)
-                    return d, p
-        for di, dj in d_ij:
-            ni, nj = i + di, j + dj
-            if not (0 <= ni < N and 0 <= nj < N): continue
-            if visited[ni][nj] or arr[ni][nj] == 1: continue
-            visited[ni][nj] = 1
-            heappush(pq, (d + 1, ni, nj))
-    return 'error'
-
-
-def to_dest(p_n):
-    global taxi_i, taxi_j
-    pq = [(0, taxi_i, taxi_j)]
-    visited = [[0] * N for _ in range(N)]
-    visited[taxi_i][taxi_j] = 1
-    while pq:
-        d, i, j = heappop(pq)
-        if dest_arr[p_n] == (i, j):
-            taxi_i, taxi_j = i, j
+        if visit[i][j]: continue
+        visit[i][j] = True
+        if is_target(i, j):
+            if fuel_empty(d, F):
+                return -1
+            arr[i][j] = 0
+            taxi = (i, j)
             return d
-        for di, dj in d_ij:
-            ni, nj = i + di, j + dj
+        for ni, nj in ((i - 1, j), (i, j - 1), (i, j + 1), (i + 1, j)):
             if not (0 <= ni < N and 0 <= nj < N): continue
-            if visited[ni][nj] or arr[ni][nj] == 1: continue
-            visited[ni][nj] = 1
+            if arr[ni][nj] == 1: continue
             heappush(pq, (d + 1, ni, nj))
-    return 'error'
+    return -1
 
 
 for k in range(M):
-    tmp = to_person()
-    if tmp == 'error':
+    p_dist = get_dist(F, lambda dist, fuel: dist >= fuel, lambda x, y: arr[x][y] == 2)
+    if p_dist == -1:
         F = -1
         break
-    p_dist, p_num = tmp
-    d_dist = to_dest(p_num)
-    if d_dist == 'error':
+    F -= p_dist
+    t_i, t_j = taxi
+    d_dist = get_dist(F, lambda dist, fuel: dist > fuel, lambda x, y: dest_dict[(t_i, t_j)] == (x, y))
+    if d_dist == -1:
         F = -1
         break
-    if F <= p_dist or F - p_dist - d_dist < 0:
-        F = -1
-        break
-    F = F - p_dist + d_dist
-
+    F += d_dist
 print(F)

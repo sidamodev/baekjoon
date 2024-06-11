@@ -1,34 +1,23 @@
-from heapq import heappush, heappop
-
-
-def dijkstra(start_v):
-    visit = set()
-    pq = [(0, start_v)]
-    w_acc = 0
-    while pq:
-        w, v = heappop(pq)
-        w_acc += w
-        if w and v == start_v: return w_acc
-        if v in visit: break
-        visit.add(v)
-        for nv, nw in adj[v]:
-            heappush(pq, (nw, nv))
-
-
 V, E = map(int, input().split())
 g = [list(map(int, input().split())) for _ in range(E)]
-adj = [[] for _ in range(V + 1)]
+adj = [{} for _ in range(V + 1)]
 
 for s, e, w in g:
-    adj[s].append((e, w))
+    adj[s][e] = w
 
-dist_lst = []
+INF = int(1e9)
+result = INF
+dist = [[INF] * (V + 1) for _ in range(V + 1)]
+
 for i in range(1, V + 1):
-    if not adj[i]: continue
-    tmp = dijkstra(i)
-    if tmp: heappush(dist_lst, tmp)
+    for j in range(1, V + 1):
+        dist[i][j] = adj[i].get(j, INF)
 
-result = -1
-if dist_lst:
-    result = heappop(dist_lst)
-print(result)
+for k in range(1, V + 1):
+    for i in range(1, V + 1):
+        for j in range(1, V + 1):
+            dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+            if i == j:
+                if dist[i][j] < result:
+                    result = dist[i][j]
+print(result if result != INF else -1)
